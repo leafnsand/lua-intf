@@ -159,7 +159,7 @@ class CppAutoDowncast
 private:
     template <typename T, typename SUPER, bool IS_CONST>
     static void* tryDowncast(SUPER* obj) {
-        void* casted = dynamic_cast<T*>(obj);
+        void* casted = static_cast<T*>(obj);
         if (casted == obj) {
             return CppObject::getClassID<T>(IS_CONST);
         } else {
@@ -497,12 +497,13 @@ struct LuaClassMapping
         return LuaCppObjectFactory<T, ObjectType, isShared, isRef>::cast(L, obj);
     }
 
-    static T& opt(lua_State* L, int index, const T&)
+    static const T& opt(lua_State* L, int index, const T& def)
     {
-        if (!lua_isnoneornil(L, index)) {
-            luaL_error(L, "nil passed to reference");
+        if (lua_isnoneornil(L, index)) {
+            return def;
+        } else {
+            return get(L, index);
         }
-        return get(L, index);
     }
 };
 
