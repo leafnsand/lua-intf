@@ -31,6 +31,7 @@ public:
     {
         if (lua_gettop(L) > 0) {
             m_what = lua_tostring(L, -1);
+            m_what.push_back('\n');
         } else {
             m_what = "unknown error";
         }
